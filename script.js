@@ -3,6 +3,10 @@ let reset=document.querySelector("#reset");
 let msgContaineer=document.querySelector(".msg_containeer");
 let newbtn=document.querySelector("#new_btn");
 let winnerMsg= document.querySelector("#winnerMsg");
+let undoButton=document.querySelector("#undo");
+
+let moveHistory=[];
+let gameOver=false;
 
 
 let Turn=true;
@@ -21,21 +25,33 @@ const winPattern=[
 const resetGame=()=>{
     Turn=true;
     enablebtns();
+    moveHistory=[];
     msgContaineer.classList.add("hide");
+    gameOver=false
 }
 
  boxes.forEach((box)=>{
     box.addEventListener("click",()=>{
+        if (gameOver) return;
+        let player;
+
 
         if(Turn){
+            player="X";
             box.innerText="X";
             Turn=false;
         }
         else{
+            player="O";
             box.innerText="O"
             Turn=true;
         }
          box.disabled=true;
+
+         moveHistory.push({
+            index:Array.from(boxes).indexOf(box),
+            player:player
+         });
 
          checkWinner();
     });
@@ -55,9 +71,31 @@ const enablebtns=()=>{
 }
 
 const showWinner=(winner)=>{
-       winnerMsg.innerText=(`Congratulation, Winner is player ${winner}`);
+       winnerMsg.innerText=(`Congratulation, Winner is player "${winner}"`);
        msgContaineer.classList.remove("hide");
        disablebtns();
+       gameOver=true;
+}
+
+const Undo=()=>{
+     if (moveHistory.length===0 || gameOver) return;
+
+    let lastMove=moveHistory.pop();
+
+    let box=boxes[lastMove.index];
+    box.innerText="";
+    box.disabled=false;
+
+
+    if (lastMove.player==="X"){
+        Turn =true;
+    }
+    else{
+        Turn = false;
+    }
+
+    gameOver=false;
+    msgContaineer.classList.add("hide");
 }
 const checkWinner=()=>{
 
@@ -88,8 +126,10 @@ const checkWinner=()=>{
    if(isdraw){
     winnerMsg.innerText=("Match Drawn");
     msgContaineer.classList.remove("hide"); 
+    gameOver=true;
    }
 }
 
+undoButton.addEventListener("click",Undo);
 reset.addEventListener("click",resetGame);
 newbtn.addEventListener("click",resetGame);

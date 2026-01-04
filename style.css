@@ -79,3 +79,12 @@ body{
 .hide{
     display: none;
 }
+
+#undo{
+    height:50px;
+    width: 100px;
+    border-radius: 1rem;
+     color: #FFBA49;
+     background-color: #23001E;
+     border:none;
+}
